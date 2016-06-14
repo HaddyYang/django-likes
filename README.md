@@ -16,7 +16,11 @@
         url(r'^likes/', include('likes.urls')),
     ]</pre>
 
-<p>4、you can use it by ajax. request url link</p>
+<p>4、update you django database</p>
+<pre>python manager.py makemigrations
+python manager.py migrate</pre>
+
+<p>5、you can use it by ajax. request url link</p>
     <pre>/likes/likes_change?type=blog&id=1&direct=1</pre>
     <p>to add a likes in blog that blog id is 1.</p>
    
