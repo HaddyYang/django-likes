@@ -21,8 +21,8 @@
 python manager.py migrate</pre>
 
 <p>5、you can use it by ajax. request url link</p>
-    <pre>/likes/likes_change?type=blog&id=1&direct=1</pre>
-    <p>to add a likes in blog that blog id is 1.</p>
+<pre>/likes/likes_change?type=blog&id=1&direct=1</pre>
+<p>to add a likes in blog that blog id is 1.</p>
    
-    <pre>/likes/likes_change?type=blog&id=1&direct=-1</pre>
-    <p>to remove a likes</p>
+<pre>/likes/likes_change?type=blog&id=1&direct=-1</pre>
+<p>to remove a likes</p>
