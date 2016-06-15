@@ -31,35 +31,34 @@ def likes_change(request):
     data['message'] = u'ok'
     data['nums'] = 0
 
+    #获取数据
+    obj_type = request.GET.get('type')
+    obj_id = request.GET.get('id')
+    user = request.user
+
+    direct = 1 if request.GET.get('direct') == '1' else -1
+    c = ContentType.objects.get(model = obj_type)
+
+    #获取Likes对象
     try:
-        #获取对象模型
-        obj_type = request.GET.get('type')
-        obj_id = request.GET.get('id')
-        user = request.user
+        l = Likes.objects.get(content_type = c, object_id = obj_id)
+    except Exception, e:
+        #没有获取到对象，则新增一个Likes对象
+        l = Likes(content_type = c, object_id = obj_id)
+    data['nums'] = l.likes_num
 
-        direct = 1 if request.GET.get('direct') == '1' else -1
-        c = ContentType.objects.get(model = obj_type)
+    #获取Likes明细对象
+    try:
+        detail = LikesDetail.objects.get(likes = l, user = user)
+    except Exception, e:
+        detail = LikesDetail(likes = l, user = user, is_like = False)
+    liked = 1 if detail.is_like else -1
 
-        #根据模型和id获取likes对象
-        ls = Likes.objects.filter(content_type = c, object_id = obj_id)
-        if len(ls)==0:
-            #没有获取到对象，则新增一个Likes对象
-            l = Likes(content_type = c, object_id = obj_id)
-        else:
-            l = ls[0]
-        data['nums'] = l.likes_num
-
-        #判断最近是否赞过，或者取消赞
-        details = LikesDetail.objects.filter(likes = l, user = user).order_by('-pub_date')
-        if len(details) == 0:
-            liked = -1
-        else:
-            liked = 1 if details[0].is_like else -1
-
-        #方向一致无效，避免多次点赞或者取消
-        if liked == direct:
-            raise Exception, u'Invalid operation'
-
+    #判断是否赞过，或者取消赞
+    if liked == direct:
+        data['status'] = 403
+        data['message'] = u'Invalid operation'
+    else:
         #更新记录
         l.likes_num += direct
         if l.likes_num < 0:
@@ -67,14 +66,9 @@ def likes_change(request):
         l.save()
         data['nums'] = l.likes_num
 
-        #新增明细
-        detail = LikesDetail(likes = l, user = user)
+        #修改明细
         detail.is_like = direct == 1
         detail.save()
-
-    except Exception, e:
-        data['status'] = 403
-        data['message'] = e.message
 
     #返回结果
     return HttpResponse(json.dumps(data), content_type="application/json")

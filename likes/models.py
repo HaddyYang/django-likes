@@ -34,7 +34,7 @@ class LikesDetail(models.Model):
     likes = models.ForeignKey(Likes)
     user = models.ForeignKey(User)
     is_like = models.BooleanField(default = False)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering=['-pub_date']
